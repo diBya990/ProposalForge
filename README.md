@@ -39,7 +39,7 @@ Open http://localhost:3000.
 
 - [x] Step 0: Project setup
 - [x] Step 1: Landing page
-- [ ] Step 2: Sign up / login
+- [x] Step 2: Sign up / login (email + Google) and 3D landing page redesign
 - [ ] Step 3: Freelancer profile
 - [ ] Step 4: AI proposal generator
 - [ ] Step 5: Edit and copy

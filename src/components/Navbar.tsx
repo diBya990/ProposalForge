@@ -1,28 +1,24 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 // The top bar shown on public pages (landing, login, sign up).
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-white/5 bg-[#05060f]/60 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 font-bold text-slate-900">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">
-            P
-          </span>
-          ProposalForge
-        </Link>
+        <Logo />
 
-        <div className="flex items-center gap-2 text-sm">
-          <Link href="/#pricing" className="hidden px-3 py-2 text-slate-600 hover:text-slate-900 sm:block">
+        <div className="flex items-center gap-1 text-sm">
+          <Link href="/#features" className="hidden px-3 py-2 text-slate-400 hover:text-white sm:block">
+            Features
+          </Link>
+          <Link href="/#pricing" className="hidden px-3 py-2 text-slate-400 hover:text-white sm:block">
             Pricing
           </Link>
-          <Link href="/login" className="px-3 py-2 text-slate-600 hover:text-slate-900">
+          <Link href="/login" className="px-3 py-2 text-slate-300 hover:text-white">
             Log in
           </Link>
-          <Link
-            href="/signup"
-            className="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700"
-          >
+          <Link href="/signup" className="btn-glow ml-1 rounded-lg px-4 py-2 font-medium text-white">
             Start free
           </Link>
         </div>

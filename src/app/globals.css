@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
-/* Brand colors used across the app. Change them here to re-theme everything. */
+/* ===== Color theme: "midnight" =====
+   Change these values to re-theme the whole app. */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #05060f;
+  --foreground: #e2e8f0;
+  --accent-1: #6366f1; /* indigo */
+  --accent-2: #a855f7; /* violet */
+  --accent-3: #22d3ee; /* cyan */
 }
 
 @theme inline {
@@ -16,4 +20,185 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* ===== Gradient text (used for highlighted words) ===== */
+.gradient-text {
+  background: linear-gradient(90deg, var(--accent-3), var(--accent-1), var(--accent-2), var(--accent-3));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-move 8s linear infinite;
+}
+
+@keyframes gradient-move {
+  to { background-position: 300% 0; }
+}
+
+/* ===== Glass panels ===== */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+/* ===== 3D tilt card (see components/TiltCard.tsx) =====
+   The component sets --rx/--ry (tilt angle) and --mx/--my (mouse position). */
+.tilt-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.2s ease-out;
+}
+
+/* Soft light that follows the cursor inside the card */
+.tilt-card .tilt-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(
+    350px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(139, 92, 246, 0.22),
+    transparent 60%
+  );
+}
+
+/* Glowing border that brightens near the cursor */
+.tilt-card .tilt-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(
+    250px circle at var(--mx, 50%) var(--my, 50%),
+    var(--accent-3),
+    var(--accent-2) 40%,
+    transparent 70%
+  );
+  /* Show only the 1px border, hide the middle */
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.tilt-card:hover .tilt-glow,
+.tilt-card:hover .tilt-border {
+  opacity: 1;
+}
+
+/* ===== Animated background (see components/Background3D.tsx) ===== */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.35;
+  animation: blob-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes blob-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8vw, 6vh) scale(1.15); }
+  100% { transform: translate(-6vw, 10vh) scale(0.9); }
+}
+
+/* A neon grid floor tilted back in 3D */
+.grid-floor {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: -10%;
+  height: 70vh;
+  transform: perspective(600px) rotateX(65deg);
+  transform-origin: bottom;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.35) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: linear-gradient(to top, black 10%, transparent 90%);
+  animation: grid-move 4s linear infinite;
+}
+
+@keyframes grid-move {
+  to { background-position: 0 60px; }
+}
+
+/* ===== Floating animation for 3D hero cards ===== */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+.float-delay {
+  animation-delay: -3s;
+}
+
+@keyframes float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+
+/* ===== Scroll reveal (see components/Reveal.tsx) ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== Form fields that glow on hover and focus ===== */
+.field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.75rem 1rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field::placeholder {
+  color: #64748b;
+}
+.field:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+.field:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2), 0 0 24px rgba(168, 85, 247, 0.35);
+}
+
+/* ===== Glowing gradient button ===== */
+.btn-glow {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transition: box-shadow 0.2s, transform 0.2s, filter 0.2s;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 35px rgba(139, 92, 246, 0.7);
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.btn-glow:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Turn off movement for people who prefer less motion (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }
