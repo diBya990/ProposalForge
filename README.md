@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProposalForge
 
-## Getting Started
+**Paste a job post, get a winning proposal, price and follow-up plan.**
 
-First, run the development server:
+ProposalForge helps freelancers (developers, designers, writers) win more jobs in less time. Paste a job post from Upwork, Fiverr, LinkedIn or anywhere else and get:
+
+1. **A tailored proposal** written in your voice, using your saved profile
+2. **A price estimate**: a suggested range and timeline, with the reasoning
+3. **A follow-up schedule**: when to follow up, with a ready-to-send message for each
+
+Built for the **Galuxium Nexus V2** hackathon.
+
+## Pricing
+
+| Plan | Price | What you get |
+|------|-------|--------------|
+| Free | $0 | 5 proposals / month |
+| Pro  | $12 / month | Unlimited proposals, follow-up reminders, win-rate analytics |
+
+## Tech stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- Supabase (database + auth)
+- Claude API (AI generation)
+- Stripe (payments, test mode)
+- Vercel (hosting)
+
+## Run it locally
 
 ```bash
+npm install
+cp .env.example .env.local   # then fill in your own keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Progress
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] Step 0: Project setup
+- [x] Step 1: Landing page
+- [ ] Step 2: Sign up / login
+- [ ] Step 3: Freelancer profile
+- [ ] Step 4: AI proposal generator
+- [ ] Step 5: Edit and copy
+- [ ] Step 6: Proposal history and status
+- [ ] Step 7: Dashboard
+- [ ] Step 8: Stripe payments
+- [ ] Step 9: Polish
+- [ ] Step 10: Submission
