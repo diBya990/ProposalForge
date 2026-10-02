@@ -2,7 +2,6 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Background3D from "@/components/Background3D";
-import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 
 // ----- Page content -----
@@ -107,7 +106,7 @@ export default function LandingPage() {
               </Link>
               <a
                 href="#how-it-works"
-                className="glass rounded-xl px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/10"
+                className="btn-soft rounded-xl px-6 py-3 font-semibold text-slate-200"
               >
                 See how it works
               </a>
@@ -115,22 +114,17 @@ export default function LandingPage() {
             <p className="mt-4 text-sm text-slate-500">5 free proposals every month. No credit card needed.</p>
           </div>
 
-          {/* 3D HERO SCENE: move your mouse over it.
-              Each layer sits at a different depth (translateZ), so they shift like real 3D objects. */}
-          {/* Note: no "glass" blur here, because blur flattens 3D depth in browsers */}
-          <TiltCard
-            maxTilt={14}
-            className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-indigo-900/50"
-          >
-            <div style={{ transformStyle: "preserve-3d" }}>
-              <div style={{ transform: "translateZ(30px)" }}>
+          {/* HERO PREVIEW: a still example of what the app produces */}
+          <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-indigo-900/50">
+            <div>
+              <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Job post</p>
                 <p className="mt-1 rounded-xl bg-white/5 p-3 text-sm text-slate-400">
                   &ldquo;Need a Next.js developer to build a booking site for my yoga studio...&rdquo;
                 </p>
               </div>
 
-              <div style={{ transform: "translateZ(60px)" }} className="mt-5">
+              <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Your proposal</p>
                 <p className="mt-1 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-3 text-sm text-slate-200">
                   Hi Sarah, I&apos;ve built 3 booking platforms with Next.js, including one for a fitness
@@ -138,18 +132,18 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div style={{ transform: "translateZ(100px)" }} className="mt-5 grid grid-cols-2 gap-3">
-                <div className="float rounded-xl border border-emerald-400/30 bg-emerald-500/15 p-3 shadow-lg shadow-emerald-500/20">
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/15 p-3 shadow-lg shadow-emerald-500/20">
                   <p className="text-xs text-emerald-300">Suggested price</p>
                   <p className="font-bold text-white">$1,200 to $1,600</p>
                 </div>
-                <div className="float float-delay rounded-xl border border-amber-400/30 bg-amber-500/15 p-3 shadow-lg shadow-amber-500/20">
+                <div className="rounded-xl border border-amber-400/30 bg-amber-500/15 p-3 shadow-lg shadow-amber-500/20">
                   <p className="text-xs text-amber-300">Follow up on</p>
                   <p className="font-bold text-white">Day 2 · 5 · 10</p>
                 </div>
               </div>
             </div>
-          </TiltCard>
+          </div>
         </section>
 
         {/* PROBLEM */}
@@ -163,11 +157,11 @@ export default function LandingPage() {
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {problems.map((problem, index) => (
                 <Reveal key={problem.title} delay={index * 120}>
-                  <TiltCard className="glass rounded-2xl p-6">
+                  <div className="glass h-full rounded-2xl p-6">
                     <span className="text-3xl">{problem.icon}</span>
                     <h3 className="mt-3 font-semibold text-white">{problem.title}</h3>
                     <p className="mt-2 text-slate-400">{problem.text}</p>
-                  </TiltCard>
+                  </div>
                 </Reveal>
               ))}
             </div>
@@ -183,13 +177,13 @@ export default function LandingPage() {
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {steps.map((step, index) => (
                 <Reveal key={step.number} delay={index * 120}>
-                  <TiltCard className="glass rounded-2xl p-6 text-center">
+                  <div className="glass h-full rounded-2xl p-6 text-center">
                     <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-xl font-bold text-white shadow-lg shadow-violet-500/40">
                       {step.number}
                     </div>
                     <h3 className="mt-4 font-semibold text-white">{step.title}</h3>
                     <p className="mt-2 text-slate-400">{step.text}</p>
-                  </TiltCard>
+                  </div>
                 </Reveal>
               ))}
             </div>
@@ -210,7 +204,7 @@ export default function LandingPage() {
             <div className="mt-12 grid gap-6 sm:grid-cols-2">
               {features.map((feature, index) => (
                 <Reveal key={feature.title} delay={index * 100}>
-                  <TiltCard className={`glass rounded-2xl bg-gradient-to-br ${feature.color} to-transparent p-6`}>
+                  <div className={`glass h-full rounded-2xl bg-gradient-to-br ${feature.color} to-transparent p-6`}>
                     <div className="flex gap-4">
                       <span className="text-3xl">{feature.icon}</span>
                       <div>
@@ -218,7 +212,7 @@ export default function LandingPage() {
                         <p className="mt-1 text-slate-400">{feature.text}</p>
                       </div>
                     </div>
-                  </TiltCard>
+                  </div>
                 </Reveal>
               ))}
             </div>
@@ -235,9 +229,8 @@ export default function LandingPage() {
             <div className="mt-12 grid gap-6 md:grid-cols-2">
               {plans.map((plan, index) => (
                 <Reveal key={plan.name} delay={index * 150}>
-                  <TiltCard
-                    maxTilt={6}
-                    className={`rounded-3xl p-8 ${
+                  <div
+                    className={`h-full rounded-3xl p-8 ${
                       plan.highlighted
                         ? "bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 shadow-2xl shadow-violet-600/40"
                         : "glass"
@@ -264,15 +257,15 @@ export default function LandingPage() {
                     </ul>
                     <Link
                       href="/signup"
-                      className={`relative z-10 mt-8 block rounded-xl px-4 py-3 text-center font-semibold transition ${
+                      className={`mt-8 block rounded-xl px-4 py-3 text-center font-semibold transition ${
                         plan.highlighted
-                          ? "bg-white text-violet-700 hover:bg-indigo-50"
+                          ? "bg-white text-violet-700 hover:-translate-y-0.5 hover:bg-indigo-50 hover:shadow-xl hover:shadow-white/30"
                           : "btn-glow text-white"
                       }`}
                     >
                       {plan.cta}
                     </Link>
-                  </TiltCard>
+                  </div>
                 </Reveal>
               ))}
             </div>
@@ -283,18 +276,18 @@ export default function LandingPage() {
         <section className="py-24">
           <Reveal>
             <div className="mx-auto max-w-3xl px-4">
-              <TiltCard maxTilt={4} className="glass rounded-3xl p-10 text-center">
+              <div className="glass rounded-3xl p-10 text-center">
                 <h2 className="text-3xl font-bold text-white md:text-4xl">
                   Your next client is posting a job <span className="gradient-text">right now.</span>
                 </h2>
                 <p className="mt-4 text-slate-400">Be the first to send a great proposal.</p>
                 <Link
                   href="/signup"
-                  className="btn-glow relative z-10 mt-8 inline-block rounded-xl px-8 py-3 font-semibold text-white"
+                  className="btn-glow mt-8 inline-block rounded-xl px-8 py-3 font-semibold text-white"
                 >
                   Start free
                 </Link>
-              </TiltCard>
+              </div>
             </div>
           </Reveal>
         </section>

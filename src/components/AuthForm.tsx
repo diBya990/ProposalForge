@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import TiltCard from "./TiltCard";
 
 type AuthFormProps = {
   mode: "login" | "signup";
@@ -93,7 +92,7 @@ export default function AuthForm({ mode, initialError }: AuthFormProps) {
   }
 
   return (
-    <TiltCard maxTilt={0} className="glass rounded-3xl p-8 shadow-2xl shadow-indigo-950/50">
+    <div className="glass rounded-3xl p-8 shadow-2xl shadow-indigo-950/50">
       <div className="relative z-10">
         <h1 className="text-2xl font-bold text-white">
           {isSignup ? "Create your account" : "Welcome back"}
@@ -193,7 +192,7 @@ export default function AuthForm({ mode, initialError }: AuthFormProps) {
           </Link>
         </p>
       </div>
-    </TiltCard>
+    </div>
   );
 }
 
