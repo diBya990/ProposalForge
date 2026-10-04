@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 
+// "match" = the pages where this link counts as the current page
 const links = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/projects", label: "Work & earnings" },
-  { href: "/profile", label: "Profile" },
+  { href: "/dashboard", label: "Dashboard", match: ["/dashboard"] },
+  { href: "/jobs", label: "✨ New proposal", match: ["/jobs", "/proposals"] },
+  { href: "/projects", label: "Work & earnings", match: ["/projects"] },
+  { href: "/profile", label: "Profile", match: ["/profile"] },
 ];
 
 // Top bar for logged-in pages. The current page's link is highlighted.
@@ -38,7 +40,7 @@ export default function AppNav({ name, plan }: { name: string; plan: string }) {
       {/* Page links (scrolls sideways on small phones) */}
       <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2 text-sm">
         {links.map((link) => {
-          const active = pathname.startsWith(link.href);
+          const active = link.match.some((path) => pathname.startsWith(path));
           return (
             <Link
               key={link.href}

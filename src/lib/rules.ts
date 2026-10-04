@@ -30,6 +30,8 @@ export const LIMITS = {
   clientNameMax: 80,
   projectDescriptionMax: 1000,
   projectAmountMax: 1_000_000,
+  jobPostMin: 80, // shorter posts don't give the AI enough to work with
+  jobPostMax: 15000,
 };
 
 // ----- Choices shown in forms -----

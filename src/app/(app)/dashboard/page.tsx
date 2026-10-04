@@ -57,11 +57,16 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Greeting */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">
-          Hi, <span className="gradient-text">{firstName}</span> 👋
-        </h1>
-        <p className="mt-1 text-slate-400">Here&apos;s how your freelance business is doing.</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white">
+            Hi, <span className="gradient-text">{firstName}</span> 👋
+          </h1>
+          <p className="mt-1 text-slate-400">Here&apos;s how your freelance business is doing.</p>
+        </div>
+        <Link href="/jobs" className="btn-glow rounded-xl px-5 py-2.5 font-semibold text-white">
+          ✨ New proposal
+        </Link>
       </div>
 
       {/* Reminder to finish the profile */}

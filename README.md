@@ -34,9 +34,10 @@ Built for the **Galuxium Nexus V2** hackathon.
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Supabase (database + auth)
-- Claude API (AI generation)
+- Google Gemini API, free tier (AI generation; provider isolated in `src/lib/ai.ts`)
 - Stripe (payments, test mode)
 - Vercel (hosting)
+- Job listings: free public APIs from [Himalayas](https://himalayas.app), [Remote OK](https://remoteok.com) and [Remotive](https://remotive.com), credited with links to every original post
 
 ## Run it locally
 
@@ -53,12 +54,12 @@ Open http://localhost:3000.
 
 - [x] Step 0: Project setup
 - [x] Step 1: Landing page
-- [x] Step 2: Sign up / login (email + Google) and 3D landing page redesign
+- [x] Step 2: Sign up / login (email + Google)
 - [x] Step 3: Freelancer profile, work history & earnings, dashboard with earnings graph
-- [ ] Step 4: AI proposal generator
-- [ ] Step 5: Edit and copy
-- [ ] Step 6: Proposal history and status
-- [ ] Step 7: Dashboard
-- [ ] Step 8: Stripe payments
-- [ ] Step 9: Polish
+- [x] Step 4: AI proposal generator (proposal + price estimate + follow-up schedule)
+- [x] Step 5: Job feed: real remote jobs matched to your skills (Himalayas, Remote OK, Remotive)
+- [ ] Step 6: Job page with 3 AI advisors: Should I apply?, Rate & income coach, Payment & contract assistant
+- [ ] Step 7: Edit and copy, proposal history and status
+- [ ] Step 8: Stripe payments (test mode)
+- [ ] Step 9: Polish and deploy
 - [ ] Step 10: Submission

@@ -88,9 +88,7 @@ export async function saveProfile(_previous: FormState, formData: FormData): Pro
     return { ok: false, message: "Please fix the highlighted fields.", errors };
   }
 
-  // ----- Save (insert the row if it's missing, otherwise update it) -----
-  const { error } = await supabase.from("profiles").upsert({
-    id: user.id,
+  const values = {
     full_name: fullName,
     headline,
     location,
@@ -101,9 +99,19 @@ export async function saveProfile(_previous: FormState, formData: FormData): Pro
     monthly_goal: monthlyGoal,
     portfolio_links: links,
     writing_tone: writingTone,
-  });
+  };
 
+  // ----- Save -----
+  // Update the existing profile. (We don't use upsert: it also tries to rewrite the
+  // "id" column, which the database doesn't let users change, for security.)
+  const { data: updated, error } = await supabase.from("profiles").update(values).eq("id", user.id).select("id");
   if (error) return { ok: false, message: `Couldn't save: ${error.message}` };
+
+  // No profile row yet (rare): create it
+  if (updated.length === 0) {
+    const { error: insertError } = await supabase.from("profiles").insert({ id: user.id, ...values });
+    if (insertError) return { ok: false, message: `Couldn't save: ${insertError.message}` };
+  }
 
   // Refresh pages that show profile info
   revalidatePath("/", "layout");
