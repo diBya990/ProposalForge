@@ -10,6 +10,8 @@ ProposalForge helps freelancers (developers, designers, writers) win more jobs i
 
 Built for the **Galuxium Nexus V2** hackathon.
 
+🔗 **Live app:** https://proposal-forge-six.vercel.app
+
 ## Pricing
 
 | Plan | Price | What you get |
