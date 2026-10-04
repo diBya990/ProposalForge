@@ -63,7 +63,7 @@ const plans = [
     name: "Free",
     price: "$0",
     period: "forever",
-    features: ["5 proposals per month", "Price estimates", "Follow-up schedule", "Proposal history"],
+    features: ["5 jobs per month with full AI help", "Job feed matched to your skills", "Proposals, prices and follow-ups", "Earnings dashboard"],
     cta: "Start free",
     highlighted: false,
   },
@@ -71,7 +71,7 @@ const plans = [
     name: "Pro",
     price: "$12",
     period: "per month",
-    features: ["Unlimited proposals", "Everything in Free", "Follow-up reminders", "Win-rate analytics"],
+    features: ["Unlimited jobs and AI advice", "Everything in Free", "Follow-up reminders", "Win-rate analytics"],
     cta: "Go Pro",
     highlighted: true,
   },
@@ -111,7 +111,7 @@ export default function LandingPage() {
                 See how it works
               </a>
             </div>
-            <p className="mt-4 text-sm text-slate-500">5 free proposals every month. No credit card needed.</p>
+            <p className="mt-4 text-sm text-slate-500">5 free jobs with full AI help every month. No credit card needed.</p>
           </div>
 
           {/* HERO PREVIEW: a still example of what the app produces */}

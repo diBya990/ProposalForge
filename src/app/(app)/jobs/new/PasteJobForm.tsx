@@ -1,7 +1,7 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useState } from "react";
-import { generateProposal } from "./actions";
+import { startTransition, useActionState, useState } from "react";
+import { savePastedJob } from "../actions";
 import { LIMITS } from "@/lib/rules";
 import type { FormState } from "@/lib/types";
 
@@ -24,29 +24,10 @@ Nice to have: Stripe payments for class packs.
 Budget: $1,000 to $1,500. I'd like it live within a month.
 Please share similar work you've done. Thanks, Sarah`;
 
-// Messages shown one after another while the AI works
-const LOADING_STEPS = [
-  "Reading the job post...",
-  "Matching it with your skills...",
-  "Writing your proposal...",
-  "Estimating a fair price...",
-  "Planning your follow-ups...",
-];
-
-export default function NewProposalForm({ blockedReason, initialJobPost = "" }: { blockedReason?: string; initialJobPost?: string }) {
-  const [state, formAction, generating] = useActionState(generateProposal, initialState);
-  const [jobPost, setJobPost] = useState(initialJobPost);
-  const [step, setStep] = useState(0);
-
-  // While generating, move to the next loading message every 2.5 seconds
-  useEffect(() => {
-    if (!generating) return;
-    const timer = setInterval(() => setStep((s) => Math.min(s + 1, LOADING_STEPS.length - 1)), 2500);
-    return () => {
-      clearInterval(timer);
-      setStep(0);
-    };
-  }, [generating]);
+// Paste a job post from anywhere. Saving it opens its job page with the 3 AI advisors.
+export default function PasteJobForm() {
+  const [state, formAction, saving] = useActionState(savePastedJob, initialState);
+  const [jobPost, setJobPost] = useState("");
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); // keeps the pasted text if there's an error
@@ -55,7 +36,6 @@ export default function NewProposalForm({ blockedReason, initialJobPost = "" }: 
   }
 
   const fieldError = state.errors?.job_post;
-  const disabled = generating || !!blockedReason;
 
   return (
     <form onSubmit={handleSubmit} className="glass space-y-4 rounded-2xl p-6">
@@ -66,7 +46,7 @@ export default function NewProposalForm({ blockedReason, initialJobPost = "" }: 
         <button
           type="button"
           onClick={() => setJobPost(EXAMPLE_JOB_POST)}
-          disabled={generating}
+          disabled={saving}
           className="rounded-lg px-3 py-1.5 text-sm text-indigo-300 transition hover:bg-white/5 hover:text-white"
         >
           Try an example
@@ -80,8 +60,8 @@ export default function NewProposalForm({ blockedReason, initialJobPost = "" }: 
         value={jobPost}
         onChange={(e) => setJobPost(e.target.value)}
         maxLength={LIMITS.jobPostMax}
-        disabled={generating}
-        placeholder="Copy the whole job post from Upwork, Fiverr, LinkedIn or anywhere else and paste it here. Include the budget and any details the client gives."
+        disabled={saving}
+        placeholder="Copy the whole job post from Upwork, Fiverr, LinkedIn or anywhere else and paste it here. Put the job title on the first line, and include the budget and any details the client gives."
         className="field resize-y"
       />
 
@@ -100,17 +80,9 @@ export default function NewProposalForm({ blockedReason, initialJobPost = "" }: 
         </p>
       )}
 
-      <button type="submit" disabled={disabled} className="btn-glow w-full rounded-xl px-6 py-3 font-semibold text-white">
-        {generating ? (
-          <span className="flex items-center justify-center gap-3">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />
-            {LOADING_STEPS[step]}
-          </span>
-        ) : (
-          "✨ Generate proposal, price & follow-ups"
-        )}
+      <button type="submit" disabled={saving} className="btn-glow w-full rounded-xl px-6 py-3 font-semibold text-white">
+        {saving ? "Saving..." : "Continue →"}
       </button>
-      {generating && <p className="text-center text-xs text-slate-500">This usually takes 10 to 20 seconds.</p>}
     </form>
   );
 }

@@ -18,7 +18,15 @@ function timeAgo(date: string, now: number) {
   return `${months} month${months === 1 ? "" : "s"} ago`;
 }
 
-export default async function JobsPage() {
+// Messages shown when opening a job failed (see openFeedJob in actions.ts)
+const OPEN_ERRORS: Record<string, string> = {
+  setup: "The database needs updating: in Supabase, open SQL Editor, run the file supabase/schema.sql again, then try once more.",
+  gone: "That job is no longer listed. Pick another one.",
+  open: "Couldn't open that job. Please try again.",
+};
+
+export default async function JobsPage(props: PageProps<"/jobs">) {
+  const { error: openError } = await props.searchParams;
   const { supabase, user } = await requireUser();
   const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle<Profile>();
   if (isMissingTableError(error)) return <SetupNotice />;
@@ -32,10 +40,16 @@ export default async function JobsPage() {
           <h1 className="text-3xl font-bold text-white">Jobs for you</h1>
           <p className="mt-1 text-slate-400">Real remote jobs, matched to the skills in your profile.</p>
         </div>
-        <Link href="/proposals/new" className="btn-soft rounded-xl px-5 py-2.5 text-sm font-medium text-white">
+        <Link href="/jobs/new" className="btn-soft rounded-xl px-5 py-2.5 text-sm font-medium text-white">
           📋 Paste a job post instead
         </Link>
       </div>
+
+      {typeof openError === "string" && OPEN_ERRORS[openError] && (
+        <p className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200" role="alert">
+          {OPEN_ERRORS[openError]}
+        </p>
+      )}
 
       {skills.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-6 text-amber-100">

@@ -7,9 +7,9 @@
 import type { Plan, Platform, Profile, ProjectStatus, ProposalSummary, WritingTone } from "./types";
 
 // ----- Plans & pricing -----
-export const PLANS: Record<Plan, { name: string; priceMonthly: number; proposalsPerMonth: number | null }> = {
-  free: { name: "Free", priceMonthly: 0, proposalsPerMonth: 5 },
-  pro: { name: "Pro", priceMonthly: 12, proposalsPerMonth: null }, // null = unlimited
+export const PLANS: Record<Plan, { name: string; priceMonthly: number; jobsPerMonth: number | null }> = {
+  free: { name: "Free", priceMonthly: 0, jobsPerMonth: 5 },
+  pro: { name: "Pro", priceMonthly: 12, jobsPerMonth: null }, // null = unlimited
 };
 
 // ----- Field limits (same numbers as the database checks) -----
@@ -60,13 +60,15 @@ export function platformLabel(value: Platform) {
   return PLATFORMS.find((p) => p.value === value)?.label ?? value;
 }
 
-// ----- Rule: proposal usage this month -----
-// The Free plan gets 5 proposals per calendar month; Pro is unlimited.
+// ----- Rule: AI usage this month -----
+// The Free plan gets 5 jobs per calendar month; Pro is unlimited.
+// The first AI action on a job uses 1 credit. After that, all 3 advisors
+// and the proposal for that job are included.
 // The counter resets automatically when a new month starts.
-export function proposalUsage(profile: Pick<Profile, "plan" | "usage_month" | "usage_count">, today = new Date()) {
+export function jobUsage(profile: Pick<Profile, "plan" | "usage_month" | "usage_count">, today = new Date()) {
   const thisMonth = today.toISOString().slice(0, 7); // "2026-10"
   const used = profile.usage_month?.slice(0, 7) === thisMonth ? profile.usage_count : 0;
-  const limit = PLANS[profile.plan].proposalsPerMonth;
+  const limit = PLANS[profile.plan].jobsPerMonth;
   return {
     used,
     limit, // null = unlimited

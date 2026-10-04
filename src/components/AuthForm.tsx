@@ -98,7 +98,7 @@ export default function AuthForm({ mode, initialError }: AuthFormProps) {
           {isSignup ? "Create your account" : "Welcome back"}
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          {isSignup ? "Start with 5 free proposals every month." : "Log in to keep winning jobs."}
+          {isSignup ? "Start with 5 free jobs every month." : "Log in to keep winning jobs."}
         </p>
 
         {/* Google button */}

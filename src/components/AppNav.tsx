@@ -7,7 +7,8 @@ import Logo from "./Logo";
 // "match" = the pages where this link counts as the current page
 const links = [
   { href: "/dashboard", label: "Dashboard", match: ["/dashboard"] },
-  { href: "/jobs", label: "✨ New proposal", match: ["/jobs", "/proposals"] },
+  { href: "/jobs", label: "✨ New proposal", match: ["/jobs"] },
+  { href: "/proposals", label: "Proposals", match: ["/proposals"] },
   { href: "/projects", label: "Work & earnings", match: ["/projects"] },
   { href: "/profile", label: "Profile", match: ["/profile"] },
 ];

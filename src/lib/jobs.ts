@@ -222,12 +222,16 @@ function skillPattern(skill: string) {
   return new RegExp(`(?<![a-z0-9])(${escaped.join("|")})(?![a-z0-9])`, "i");
 }
 
-function matchJob(job: Job, skills: string[]): MatchedJob {
-  const text = `${job.title}\n${job.tags.join(" ")}\n${job.description}`;
+// Which of the skills appear in a piece of text (used for feed jobs and pasted jobs)
+export function matchSkills(skills: string[], text: string) {
   const matchedSkills = skills.filter((skill) => skillPattern(skill).test(text));
   // Matching about half your skills already makes a strong fit, so we scale up and cap at 100
   const matchPercent = skills.length ? Math.min(100, Math.round((matchedSkills.length / Math.min(skills.length, 6)) * 100)) : 0;
-  return { ...job, matchedSkills, matchPercent };
+  return { matchedSkills, matchPercent };
+}
+
+function matchJob(job: Job, skills: string[]): MatchedJob {
+  return { ...job, ...matchSkills(skills, `${job.title}\n${job.tags.join(" ")}\n${job.description}`) };
 }
 
 // ---------------------------------------------------------------------

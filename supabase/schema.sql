@@ -153,10 +153,10 @@ grant update (job_title, job_post, proposal, price_min, price_max, timeline,
               price_reasoning, follow_ups, status)
   on public.proposals to authenticated;
 
--- Business rule: Free plan = 5 proposals per calendar month, Pro = unlimited.
+-- Business rule: Free plan = 5 jobs per calendar month, Pro = unlimited.
 -- Enforced here in the database, so nobody can get around it from the browser.
 -- We count with a counter on the profile (not by counting rows), so deleting
--- old proposals does NOT give back free proposals.
+-- old proposals or jobs does NOT give back free credits.
 create or replace function public.enforce_proposal_limit()
 returns trigger
 language plpgsql
@@ -166,6 +166,17 @@ declare
   this_month date := date_trunc('month', now())::date;
   p public.profiles%rowtype;
 begin
+  -- A proposal written for a saved job uses that job's credit (see use_job_credit below)
+  if new.job_id is not null then
+    if not exists (
+      select 1 from public.jobs where id = new.job_id and user_id = new.user_id and counted
+    ) then
+      raise exception 'NO_CREDIT: This job has not used a credit yet.';
+    end if;
+    return new;
+  end if;
+
+  -- Older proposals without a job count one credit each.
   -- Make sure the profile exists, then lock it so two requests can't sneak past the limit
   insert into public.profiles (id) values (new.user_id) on conflict (id) do nothing;
   select * into p from public.profiles where id = new.user_id for update;
@@ -176,7 +187,7 @@ begin
   end if;
 
   if p.plan = 'free' and p.usage_count >= 5 then
-    raise exception 'FREE_LIMIT_REACHED: The Free plan includes 5 proposals per month. Upgrade to Pro for unlimited proposals.';
+    raise exception 'FREE_LIMIT_REACHED: The Free plan includes 5 jobs per month. Upgrade to Pro for unlimited jobs.';
   end if;
 
   update public.profiles
@@ -215,3 +226,107 @@ drop trigger if exists proposals_updated_at on public.proposals;
 create trigger proposals_updated_at
   before update on public.proposals
   for each row execute function public.set_updated_at();
+
+
+-- ---------------------------------------------------------------------
+-- 5. JOBS: jobs the user opened (from the job feed or pasted),
+--    with the saved answers from the 3 AI advisors.
+-- ---------------------------------------------------------------------
+create table if not exists public.jobs (
+  id             uuid primary key default gen_random_uuid(),
+  user_id        uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  external_id    text, -- the job board's id (empty for pasted jobs)
+  source         text not null default 'Pasted'
+                 check (source in ('Himalayas', 'Remote OK', 'Remotive', 'Pasted')),
+  title          text not null check (char_length(title) between 1 and 200),
+  company        text not null default '' check (char_length(company) <= 200),
+  url            text,
+  job_type       text not null default 'other'
+                 check (job_type in ('contract', 'full_time', 'part_time', 'other')),
+  salary         text not null default '',
+  location       text not null default '',
+  description    text not null check (char_length(description) between 1 and 15000),
+  matched_skills text[] not null default '{}',
+  match_percent  int not null default 0 check (match_percent between 0 and 100),
+  fit            jsonb, -- "Should I apply?" answer
+  rate           jsonb, -- "Rate & income coach" answer
+  contract       jsonb, -- "Payment & contract assistant" answer
+  counted        boolean not null default false, -- has this job used a monthly credit?
+  created_at     timestamptz not null default now(),
+  unique (user_id, external_id)
+);
+
+create index if not exists jobs_user_created_idx on public.jobs (user_id, created_at desc);
+
+alter table public.jobs enable row level security;
+
+drop policy if exists "Users manage own jobs" on public.jobs;
+create policy "Users manage own jobs" on public.jobs
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Users can save jobs and AI answers, but can't mark a job as "counted" themselves
+revoke insert, update on public.jobs from anon, authenticated;
+grant insert (external_id, source, title, company, url, job_type, salary, location,
+              description, matched_skills, match_percent)
+  on public.jobs to authenticated;
+grant update (fit, rate, contract) on public.jobs to authenticated;
+
+-- Link each proposal to the job it was written for
+alter table public.proposals
+  add column if not exists job_id uuid references public.jobs (id) on delete set null;
+
+-- Business rule: the first AI action on a job uses 1 monthly credit.
+-- After that, all 3 advisors and the proposal for that job are included.
+create or replace function public.use_job_credit(p_job_id uuid)
+returns void
+language plpgsql
+security definer set search_path = ''
+as $$
+declare
+  this_month date := date_trunc('month', now())::date;
+  j public.jobs%rowtype;
+  p public.profiles%rowtype;
+begin
+  select * into j from public.jobs where id = p_job_id and user_id = auth.uid() for update;
+  if not found then
+    raise exception 'JOB_NOT_FOUND: That job was not found.';
+  end if;
+
+  -- Already paid for this job: nothing to do
+  if j.counted then
+    return;
+  end if;
+
+  insert into public.profiles (id) values (j.user_id) on conflict (id) do nothing;
+  select * into p from public.profiles where id = j.user_id for update;
+
+  if p.usage_month <> this_month then
+    p.usage_count := 0;
+  end if;
+
+  if p.plan = 'free' and p.usage_count >= 5 then
+    raise exception 'FREE_LIMIT_REACHED: The Free plan includes 5 jobs per month. Upgrade to Pro for unlimited jobs.';
+  end if;
+
+  update public.profiles
+  set usage_month = this_month, usage_count = p.usage_count + 1
+  where id = j.user_id;
+
+  update public.jobs set counted = true where id = p_job_id;
+end;
+$$;
+
+revoke execute on function public.use_job_credit(uuid) from public, anon;
+grant execute on function public.use_job_credit(uuid) to authenticated;
+
+
+-- ---------------------------------------------------------------------
+-- 6. PROPOSAL TRACKING (Step 7): when it was sent, which follow-ups
+--    were sent, and the earnings project it became when won.
+-- ---------------------------------------------------------------------
+alter table public.proposals add column if not exists sent_at timestamptz;
+alter table public.proposals add column if not exists followups_sent int[] not null default '{}';
+alter table public.proposals
+  add column if not exists project_id uuid references public.projects (id) on delete set null;
+
+grant update (sent_at, followups_sent, project_id) on public.proposals to authenticated;

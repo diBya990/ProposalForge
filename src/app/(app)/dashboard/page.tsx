@@ -7,8 +7,9 @@ import StatCard from "@/components/StatCard";
 import { isMissingTableError, requireUser } from "@/lib/auth";
 import { earningsByPlatform, earningsSummary, monthlyEarnings } from "@/lib/earnings";
 import { formatDate, formatMoney } from "@/lib/format";
-import { PLANS, platformLabel, profileCompleteness, proposalUsage, winRate } from "@/lib/rules";
-import type { Profile, Project, ProposalSummary } from "@/lib/types";
+import { upcomingFollowUps } from "@/lib/followups";
+import { PLANS, platformLabel, jobUsage, profileCompleteness, winRate } from "@/lib/rules";
+import type { Profile, Project, Proposal } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Dashboard · ProposalForge" };
 
@@ -19,7 +20,7 @@ export default async function DashboardPage() {
   const [profileResult, projectsResult, proposalsResult] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("projects").select("*").order("completed_on", { ascending: false, nullsFirst: false }),
-    supabase.from("proposals").select("id, status, created_at"),
+    supabase.from("proposals").select("id, status, created_at, job_title, sent_at, follow_ups, followups_sent"),
   ]);
 
   if (
@@ -32,14 +33,15 @@ export default async function DashboardPage() {
 
   const profile = profileResult.data as Profile | null;
   const projects = (projectsResult.data ?? []) as Project[];
-  const proposals = (proposalsResult.data ?? []) as ProposalSummary[];
+  const proposals = ((proposalsResult.data ?? []) as Proposal[]).map((p) => ({ ...p, followups_sent: p.followups_sent ?? [] }));
 
   // ----- Numbers -----
   const summary = earningsSummary(projects);
   const months = monthlyEarnings(projects);
   const platforms = earningsByPlatform(projects);
-  const usage = proposalUsage(profile ?? { plan: "free", usage_month: "", usage_count: 0 });
+  const usage = jobUsage(profile ?? { plan: "free", usage_month: "", usage_count: 0 });
   const wins = winRate(proposals);
+  const followUps = upcomingFollowUps(proposals).slice(0, 5);
   const { readyForAI } = profileCompleteness(profile);
 
   const plan = profile?.plan ?? "free";
@@ -108,7 +110,7 @@ export default async function DashboardPage() {
         <EarningsChart months={months} />
 
         <div className="space-y-6">
-          {/* Plan & usage (business rule: Free = 5 proposals / month) */}
+          {/* Plan & usage (business rule: Free = 5 jobs / month) */}
           <div className="glass rounded-2xl p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-white">{PLANS[plan].name} plan</h2>
@@ -118,10 +120,10 @@ export default async function DashboardPage() {
             </div>
 
             {usage.limit === null ? (
-              <p className="mt-3 text-slate-300">Unlimited proposals ✨</p>
+              <p className="mt-3 text-slate-300">Unlimited jobs ✨</p>
             ) : (
               <>
-                <p className="mt-3 text-sm text-slate-400">Proposals this month</p>
+                <p className="mt-3 text-sm text-slate-400">Jobs analyzed this month</p>
                 <p className="text-2xl font-bold text-white">
                   {usage.used} <span className="text-base font-normal text-slate-400">of {usage.limit}</span>
                 </p>
@@ -131,7 +133,7 @@ export default async function DashboardPage() {
                   aria-valuenow={usage.used}
                   aria-valuemin={0}
                   aria-valuemax={usage.limit}
-                  aria-label="Proposals used this month"
+                  aria-label="Jobs used this month"
                 >
                   <div
                     className={`h-full rounded-full ${usage.reachedLimit ? "bg-red-400" : "bg-indigo-400"}`}
@@ -158,6 +160,31 @@ export default async function DashboardPage() {
                 ? "Send your first proposal to start tracking."
                 : `${wins.won} won · ${wins.replied} replied · ${wins.sent} sent`}
             </p>
+            <Link href="/proposals" className="mt-3 inline-block text-sm text-indigo-300 hover:text-white">
+              All proposals →
+            </Link>
+          </div>
+
+          {/* Follow-ups to send in the next 7 days (or overdue) */}
+          <div className="glass rounded-2xl p-6">
+            <h2 className="font-semibold text-white">📅 Upcoming follow-ups</h2>
+            {followUps.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-400">Nothing to send this week. Mark proposals as Sent to get reminders.</p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {followUps.map((f) => (
+                  <li key={`${f.proposalId}-${f.day}`}>
+                    <Link href={`/proposals/${f.proposalId}`} className="block rounded-lg px-2 py-1.5 text-sm transition hover:bg-white/5">
+                      <span className="block truncate text-white">{f.jobTitle}</span>
+                      <span className={f.state === "upcoming" ? "text-slate-400" : "text-amber-300"}>
+                        Day {f.day} ·{" "}
+                        {f.state === "overdue" ? `overdue since ${formatDate(f.dueDate)}` : f.state === "due" ? "send today" : formatDate(f.dueDate)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

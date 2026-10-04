@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
+import { openFeedJob } from "./actions";
 import type { JobType } from "@/lib/jobs";
 
 // The small version of a job that the page sends to the browser (no long description)
@@ -145,12 +146,11 @@ export default function JobFeed({ jobs }: { jobs: JobCard[] }) {
               >
                 View original on {job.source} ↗
               </a>
-              <Link
-                href={`/proposals/new?job=${encodeURIComponent(job.id)}`}
-                className="btn-glow rounded-xl px-5 py-2 text-sm font-semibold text-white"
-              >
-                ✍️ Write proposal
-              </Link>
+              {/* Saves the job (once) and opens its page with the 3 AI advisors */}
+              <form action={openFeedJob}>
+                <input type="hidden" name="job_id" value={job.id} />
+                <OpenJobButton />
+              </form>
             </div>
           </li>
         ))}
@@ -170,6 +170,16 @@ export default function JobFeed({ jobs }: { jobs: JobCard[] }) {
         </button>
       )}
     </div>
+  );
+}
+
+// Shows "Opening..." while the job is being saved
+function OpenJobButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-glow rounded-xl px-5 py-2 text-sm font-semibold text-white">
+      {pending ? "Opening..." : "Open job → AI advice"}
+    </button>
   );
 }
 
