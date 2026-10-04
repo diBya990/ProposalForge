@@ -144,7 +144,7 @@ export default async function DashboardPage() {
                   {usage.reachedLimit ? "Limit reached. " : `${usage.remaining} left. `}
                   Resets {formatDate(resetDate)}.
                 </p>
-                <Link href="/#pricing" className="btn-glow mt-4 block rounded-xl px-4 py-2 text-center text-sm font-semibold text-white">
+                <Link href="/billing" className="btn-glow mt-4 block rounded-xl px-4 py-2 text-center text-sm font-semibold text-white">
                   Upgrade to Pro: unlimited
                 </Link>
               </>

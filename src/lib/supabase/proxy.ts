@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "./config";
 
 // Pages that need a logged-in user.
-const protectedPaths = ["/dashboard", "/profile", "/projects", "/proposals", "/jobs"];
+const protectedPaths = ["/dashboard", "/profile", "/projects", "/proposals", "/jobs", "/billing"];
 // Pages a logged-in user doesn't need to see again.
 const authPaths = ["/login", "/signup"];
 

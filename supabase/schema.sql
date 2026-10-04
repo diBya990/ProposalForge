@@ -330,3 +330,16 @@ alter table public.proposals
   add column if not exists project_id uuid references public.projects (id) on delete set null;
 
 grant update (sent_at, followups_sent, project_id) on public.proposals to authenticated;
+
+
+-- ---------------------------------------------------------------------
+-- 7. SUBSCRIPTIONS (Step 9): Pro plan payments through Lemon Squeezy.
+--    Only the payment webhook (using the secret service key) writes these.
+--    Users can read them but never change them, so nobody can give
+--    themselves Pro for free.
+-- ---------------------------------------------------------------------
+alter table public.profiles add column if not exists ls_customer_id text;
+alter table public.profiles add column if not exists ls_subscription_id text;
+alter table public.profiles add column if not exists subscription_status text;
+alter table public.profiles add column if not exists subscription_renews_at timestamptz;
+alter table public.profiles add column if not exists subscription_ends_at timestamptz;

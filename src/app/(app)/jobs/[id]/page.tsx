@@ -90,7 +90,15 @@ export default async function JobPage(props: PageProps<"/jobs/[id]">) {
             : usage.limit === null
               ? "Unlimited AI help with Pro ✨"
               : usage.reachedLimit
-                ? "You've used your 5 free jobs this month. Upgrade to Pro to keep going."
+                ? (
+                    <>
+                      You&apos;ve used your 5 free jobs this month.{" "}
+                      <Link href="/billing" className="font-semibold text-indigo-300 underline hover:text-white">
+                        Upgrade to Pro
+                      </Link>{" "}
+                      to keep going.
+                    </>
+                  )
                 : `Your first question about this job uses 1 of your ${usage.remaining} free jobs left this month. After that, everything for this job is included.`}
         </p>
       )}

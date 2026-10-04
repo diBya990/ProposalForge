@@ -23,13 +23,16 @@ export default function AppNav({ name, plan }: { name: string; plan: string }) {
         <Logo />
         <div className="flex items-center gap-3 text-sm">
           <span className="hidden text-slate-400 sm:inline">{name}</span>
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-              plan === "pro" ? "bg-violet-500/20 text-violet-200" : "bg-white/10 text-slate-300"
+          {/* Plan badge: opens Billing (upgrade or manage) */}
+          <Link
+            href="/billing"
+            title={plan === "pro" ? "Manage your Pro plan" : "Upgrade to Pro"}
+            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition ${
+              plan === "pro" ? "bg-violet-500/20 text-violet-200 hover:bg-violet-500/30" : "bg-white/10 text-slate-300 hover:bg-white/20"
             }`}
           >
-            {plan === "pro" ? "Pro" : "Free"}
-          </span>
+            {plan === "pro" ? "Pro ✨" : "Free · Upgrade"}
+          </Link>
           <form action="/auth/signout" method="post">
             <button className="rounded-lg px-3 py-2 text-slate-300 transition hover:bg-white/10 hover:text-white">
               Log out

@@ -25,7 +25,8 @@ Built for the **Galuxium Nexus V2** hackathon.
 |------|----------------------|
 | Free plan: 5 jobs per calendar month; Pro: unlimited. The first AI action on a job uses 1 credit; after that, all 3 advisors and the proposal for that job are included | Database function `use_job_credit` + trigger (`supabase/schema.sql`) |
 | Deleting jobs or proposals doesn't give credits back (a monthly counter is used) | Database |
-| Users can't change their own plan; only payments can | Database column permissions |
+| Users can't change their own plan; only the signed payment webhook can | Database column permissions + webhook signature check (`src/lib/billing.ts`) |
+| Pro while the subscription is active, on trial, retrying a failed payment, or cancelled but paid until its end date; Free when expired, unpaid or paused | `planFromStatus` in `src/lib/billing.ts` |
 | Users can only see and edit their own data | Row Level Security on every table |
 | AI proposals unlock once name, 3+ skills, a 50+ character experience summary and hourly rate are set | `src/lib/rules.ts` |
 | Income counts only for completed projects, on their completion date; cancelled never counts | `src/lib/earnings.ts` |
@@ -39,7 +40,7 @@ Built for the **Galuxium Nexus V2** hackathon.
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Supabase (database + auth)
 - Google Gemini API, free tier (AI generation; provider isolated in `src/lib/ai.ts`)
-- Stripe (payments, test mode)
+- Lemon Squeezy (payments, test mode). Chosen because Stripe does not support sellers in Bangladesh; Lemon Squeezy is a merchant of record that handles global sales tax
 - Vercel (hosting)
 - Job listings: free public APIs from [Himalayas](https://himalayas.app), [Remote OK](https://remoteok.com) and [Remotive](https://remotive.com), credited with links to every original post
 
@@ -64,6 +65,7 @@ Open http://localhost:3000.
 - [x] Step 5: Job feed: real remote jobs matched to your skills (Himalayas, Remote OK, Remotive)
 - [x] Step 6: Job page with 3 AI advisors: Should I apply?, Rate & income coach, Payment & contract assistant
 - [x] Step 7: Edit and copy, proposal history and status, follow-up reminders
-- [ ] Step 8: Stripe payments (test mode)
-- [ ] Step 9: Polish and deploy
+- [x] Step 8: Deploy to Vercel
+- [x] Step 9: Payments with Lemon Squeezy (test mode): upgrade to Pro, webhook, billing page
+- [ ] Step 9b: Polish
 - [ ] Step 10: Submission
